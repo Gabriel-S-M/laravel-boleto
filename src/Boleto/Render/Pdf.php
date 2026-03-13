@@ -260,17 +260,45 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->desc, $this->_('Agência/Código beneficiário'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNomeDocumento()), 'LR');
-        $xBeneficiario = $this->GetX();
-        $yBeneficiario = $this->GetY();
-        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgenciaCodigoBeneficiario()), 'R', 1, 'R');
+
+        $wBeneficiario = 120;
+        $wAgencia = 50;
+
+        $x = $this->GetX();
+        $y = $this->GetY();
+
+        $textoBeneficiario = $this->_(
+            $this->boleto[$i]->getBeneficiario()->getNomeDocumento()
+        );
+
+        $this->MultiCell($wBeneficiario, 4, $textoBeneficiario, 'LR');
+
+        $altura = $this->GetY() - $y;
+
+        $this->SetXY($x + $wBeneficiario, $y);
+
+        $this->Cell(
+            $wAgencia,
+            $altura,
+            $this->_($this->boleto[$i]->getAgenciaCodigoBeneficiario()),
+            'R',
+            1,
+            'R'
+        );
+
         if ($this->boleto[$i]->getMostrarEnderecoFichaCompensacao()) {
-            $this->SetXY($xBeneficiario, $yBeneficiario);
-            $this->Ln(4);
             $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-            $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getEnderecoCompleto()), 'LR');
-            $this->Cell(50, $this->cell, '', 'R', 1, 'R');
+
+            $this->Cell(
+                120,
+                $this->cell,
+                $this->_($this->boleto[$i]->getBeneficiario()->getEnderecoCompleto()),
+                'LR'
+            );
+
+            $this->Cell(50, $this->cell, '', 'R', 1);
         }
+
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(30, $this->desc, $this->_('Data do documento'), 'TLR');
